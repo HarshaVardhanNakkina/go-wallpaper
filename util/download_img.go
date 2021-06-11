@@ -13,6 +13,5 @@ func DownloadImg(url string) (*http.Response, error) {
 		return nil, err
 	}
 
-	defer resp.Body.Close()
 	return resp, nil
 }
