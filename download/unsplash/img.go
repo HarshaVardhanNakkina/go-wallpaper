@@ -31,6 +31,7 @@ func DownloadFromUnsplash(resolution, tag string) error {
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 
 	reqUrl := resp.Request.URL
 	_, err = check404Error(reqUrl)
