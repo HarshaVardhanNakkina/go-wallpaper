@@ -29,12 +29,15 @@ type ChildInfo struct {
 	Url                   string `json:"url"`
 }
 
-var redditUrl string = "https://www.reddit.com/r/wallpaper/new.json"
+var redditUrl string = "https://www.reddit.com/r"
+var sort string = "new"
 var userAgent string = "win64:github.com/HarshaVardhanNakkina/go-wallpaper:/u/harsha602"
+var subreddits []string = []string{"EarthPorn", "wallpaper", "wallpapers", "multiwall"}
 
 func DownloadFromReddit() error {
 	fmt.Println("Downloading image from Reddit")
-	url := redditUrl
+	subreddit := util.GetRandomNum(len(subreddits))
+	url := fmt.Sprintf("%v/%v/%v/.json", redditUrl, subreddits[subreddit], sort)
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
