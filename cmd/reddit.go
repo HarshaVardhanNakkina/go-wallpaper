@@ -16,73 +16,17 @@ limitations under the License.
 package cmd
 
 import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"net/http"
-	"time"
-
+	reddit "github.com/HarshaVardhanNakkina/go-wallpaper/download/reddit"
 	"github.com/spf13/cobra"
 )
-
-type Result struct {
-	Data Children `json:"data"`
-}
-
-type Children struct {
-	ChildrenArr []ChildData `json:"children"`
-}
-
-type ChildData struct {
-	ChildObj ChildInfo `json:"data"`
-}
-
-type ChildInfo struct {
-	Title                 string `json:"title"`
-	SubredditNamePrefixed string `json:"subreddit_name_prefixed"`
-	Url                   string `json:"url"`
-}
 
 // redditCmd represents the reddit command
 var redditCmd = &cobra.Command{
 	Use:   "reddit",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("reddit called")
-		url := "https://www.reddit.com/r/wallpaper/new.json"
-		client := &http.Client{
-			Timeout: time.Second * 120,
-		}
-		req, err := http.NewRequest("GET", url, nil)
-		if err != nil {
-			cobra.CheckErr(err)
-		}
-		req.Header.Set("user-agent", "win64:github.com/HarshaVardhanNakkina/go-wallpaper:/u/harsha602")
-		response, err := client.Do(req)
-		if err != nil {
-			cobra.CheckErr(err)
-		}
-		defer response.Body.Close()
-		body, err := ioutil.ReadAll(response.Body)
-		if err != nil {
-			cobra.CheckErr(err)
-		}
-		//Convert the body to type string
-		// sb := string(body)
-		// fmt.Printf("Results String: %v\n", sb)
-
-		var data Result
-		json.Unmarshal(body, &data)
-		// fmt.Printf("Results: %v\n", data)
-		for _, child := range data.Data.ChildrenArr {
-			fmt.Println(child.ChildObj)
-		}
+	Short: "Set wallpaper from Reddit",
+	Long:  `Selects a random wallpaper from new wallpapers uploaded to several different subreddits`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return reddit.DownloadFromReddit()
 	},
 }
 
