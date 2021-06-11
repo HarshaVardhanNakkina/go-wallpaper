@@ -33,7 +33,7 @@ var redditUrl string = "https://www.reddit.com/r/wallpaper/new.json"
 var userAgent string = "win64:github.com/HarshaVardhanNakkina/go-wallpaper:/u/harsha602"
 
 func DownloadFromReddit() error {
-	fmt.Println("Downloading image from unsplash.com")
+	fmt.Println("Downloading image from Reddit")
 	url := redditUrl
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
@@ -65,6 +65,7 @@ func DownloadFromReddit() error {
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 
 	fileExt := filepath.Ext(imgUrl)
 
@@ -73,7 +74,7 @@ func DownloadFromReddit() error {
 		return err
 	}
 
-	filename := fmt.Sprintf("wallpaper.%v", fileExt)
+	filename := fmt.Sprintf("wallpaper%v", fileExt)
 	return setwallpaper.SetWallpaper(filename, rawImg)
 
 }
