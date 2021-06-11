@@ -3,16 +3,12 @@ package reddit
 import (
 	"encoding/json"
 	"fmt"
-	"io/fs"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"path/filepath"
 
-	setwallpaper "github.com/HarshaVardhanNakkina/go-wallpaper/set-wallpaper"
+	setwallpaper "github.com/HarshaVardhanNakkina/go-wallpaper/set_wallpaper"
 	util "github.com/HarshaVardhanNakkina/go-wallpaper/util"
-	"github.com/mitchellh/go-homedir"
-	"github.com/spf13/cobra"
 )
 
 type Result struct {
@@ -35,14 +31,14 @@ type ChildInfo struct {
 
 var redditUrl string = "https://www.reddit.com/r/wallpaper/new.json"
 var userAgent string = "win64:github.com/HarshaVardhanNakkina/go-wallpaper:/u/harsha602"
-var defaultFileMode fs.FileMode = 0644
 
 func DownloadFromReddit() error {
+	fmt.Println("Downloading image from unsplash.com")
 	url := redditUrl
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		cobra.CheckErr(err)
+		return err
 	}
 
 	req.Header.Set("user-agent", userAgent)
@@ -59,62 +55,25 @@ func DownloadFromReddit() error {
 
 	var data Result
 	json.Unmarshal(body, &data)
-	randInd := util.GetRandomNum(len(data.Data.ChildrenArr))
-	pick := data.Data.ChildrenArr[randInd]
 
-	rawImg, fileExt, err := downloadImg(pick.ChildObj.Url)
+	images := data.Data.ChildrenArr
+	randInd := util.GetRandomNum(len(images))
+	pick := images[randInd]
+	imgUrl := pick.ChildObj.Url
+
+	resp, err := util.DownloadImg(imgUrl)
 	if err != nil {
 		return err
 	}
 
-	homeDir, err := homedir.Dir()
+	fileExt := filepath.Ext(imgUrl)
+
+	rawImg, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
 
 	filename := fmt.Sprintf("wallpaper.%v", fileExt)
-	fileLocation := filepath.Join(homeDir, "Pictures", "go-wallpaper")
-	filepath := filepath.Join(fileLocation, filename)
-	createDirIfNotExists(fileLocation)
+	return setwallpaper.SetWallpaper(filename, rawImg)
 
-	fmt.Println("Saving image @", filepath)
-	err = ioutil.WriteFile(filepath, rawImg, defaultFileMode)
-	if err != nil {
-		return err
-	}
-	setwallpaper.SetWallpaper(filepath)
-
-	return nil
-}
-
-func downloadImg(url string) ([]byte, string, error) {
-	fmt.Println("URL:", url)
-	resp, err := http.Get(url)
-
-	if err != nil {
-		return nil, "", err
-	}
-
-	defer resp.Body.Close()
-
-	fileExt := filepath.Ext(url)
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, "", err
-	}
-
-	return body, fileExt, nil
-}
-
-func createDirIfNotExists(fileLocation string) error {
-	_, err := os.Stat(fileLocation)
-
-	if os.IsNotExist(err) {
-		errDir := os.MkdirAll(fileLocation, defaultFileMode)
-		if errDir != nil {
-			return errDir
-		}
-	}
-	return nil
 }
