@@ -39,8 +39,6 @@ var rootCmd = &cobra.Command{
 Inspired by https://github.com/thevinter/styli.sh
 Currently the image sources is/are Unsplash
 `,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return unsplash.DownloadFromUnsplash(Resolution, Tag)
 	},
