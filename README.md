@@ -1,31 +1,53 @@
 # go-wallpaper
 
-go-wallpaper is a cli tool for setting random wallpapers for Windows. It is built with Golang and inspired by [styli.sh](https://github.com/thevinter/styli.sh)
+go-wallpaper is a cli tool for setting random wallpapers for Windows.
+It is built with Golang and inspired by [styli.sh](https://github.com/thevinter/styli.sh)
 
-## how it works
+## How it works
 
-![go-wallpaper.gif](./go-wallpaper.gif)
+![go-wallpaper.gif](./assets/go-wallpaper.gif)
 
-## features
+## Features
 
-- currently it downloads images from [Unsplash](https://unsplash.com)
-- it can take resolution as a flag e.g., `go-wallpaper.exe -r 1900x1080`
-- it can take a search term/tag as a flag e.g., `go-wallpaper.exe -t sea,sunset`
+- It can set wallpapers from [Unsplash](https://unsplash.com), subreddits like `/r/wallpaper`, `/r/wallpapers`
 - `go-wallpaper.exe --help` for help
 
-## how to use
+## How to install
 
-- If you already have Golang installed in your system, you can clone this repo and run the following commands
+- If you already have Golang installed, you can clone this repo and run the following commands
   - `go mod tidy` to install dependencies
   - `go install` to add the binary to your gopath
 - Or you can download the pre-built binaries from releases sections and add it to your path (or somewhere you can use it from terminal, cmd, powershell etc...)
 
-## features to come
+## How to use
 
-- [ ] Set wallpapers from subreddits like `r/wallpapers` etc...
-- [ ] Flags for saving the wallpaper permanently
+```bash
+# set a random background from unsplash
+# the default resolution is 1920x1080
+> go-wallpaper.exe
+
+# provide resolution with -r or --resolution flag
+> go-wallpaper.exe -r 2560x1440
+
+# random background from unsplash with a search term/tag
+# -t <tag> or --tag <tag>, multiple tags should be separated
+> go-wallpaper.exe -t sunset
+> go-wallpaper.exe -t "sunset,beach"
+
+# set a random background from one of these subreddits "EarthPorn", "wallpaper", "wallpapers", "multiwall"
+# resolution, tag flags won't have any effect here
+> go-wallpaper.exe reddit
+```
+
+## Features to come
+
+- [x] Set wallpapers from subreddits like `r/wallpapers` etc...
+- [ ] Wallpapers from different sections of subreddit like `hot`, `new`, `top` etc...
+- [ ] Flags for custom subreddit
+- [ ] Flags for selecting wallpapers from a specific unsplash collection
+- [ ] Flags for saving the wallpapers permanently with a different name
 - [ ] Writing tests and maybe publish it as package for others to use
 
-## contribution
+## Contribution
 
 the project is a mess currently 😓, I will clean it, and make it easy for contribution, so until then I can not accept any contributions
