@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/url"
-	"strings"
+	"regexp"
 
 	setwallpaper "github.com/HarshaVardhanNakkina/go-wallpaper/set_wallpaper"
 	"github.com/HarshaVardhanNakkina/go-wallpaper/util"
@@ -39,8 +39,13 @@ func DownloadFromUnsplash(resolution, tag string) error {
 		return err
 	}
 
+	fileExt := "jpeg"
 	contentType := resp.Header.Get("Content-Type")
-	fileExt := strings.Split(contentType, "/")
+	imgExtRegex := regexp.MustCompile(`(?i)(jpeg|jpg|png)`)
+	imgExt := imgExtRegex.FindString(contentType)
+	if imgExt != "" {
+		fileExt = imgExt
+	}
 
 	rawImg, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
