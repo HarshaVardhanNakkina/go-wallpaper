@@ -43,6 +43,7 @@ It is built with Golang and inspired by [styli.sh](https://github.com/thevinter/
 ## Features to come
 
 - [x] Set wallpapers from subreddits like `r/wallpapers` etc...
+- [ ] Set wallpapers from NASA image library [NASA Images](https://images.nasa.gov/), [NASA API Docs](https://images.nasa.gov/docs/images.nasa.gov_api_docs.pdf)
 - [ ] Wallpapers from different sections of subreddit like `hot`, `new`, `top` etc...
 - [ ] Flags for custom subreddit
 - [ ] Flags for selecting wallpapers from a specific unsplash collection
