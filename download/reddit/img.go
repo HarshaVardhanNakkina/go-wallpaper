@@ -21,7 +21,7 @@ func DownloadFromReddit() error {
 	randIdx := util.GetRandomNum(len(subreddits))
 	subreddit := subreddits[randIdx]
 	url := fmt.Sprintf("%v/%v/%v/.json", redditUrl, subreddit, sort)
-	fmt.Println("Downloading image from /r/", subreddit)
+	fmt.Printf("Downloading image from /r/%v\n", subreddit)
 
 	client := &http.Client{}
 	response, err := httpRequest(client, "GET", url)

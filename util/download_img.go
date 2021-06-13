@@ -21,7 +21,6 @@ func DownloadImg(url string) (*http.Response, error) {
 func ExtractFileExt(resp *http.Response) string {
 	fileExt := "jpeg"
 	contentType := resp.Header.Get("Content-Type")
-	fmt.Println(contentType)
 	imgExtRegex := regexp.MustCompile(`(?i)(jpeg|jpg|png)`)
 	imgExt := imgExtRegex.FindString(contentType)
 	if imgExt != "" {
