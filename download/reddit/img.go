@@ -2,7 +2,6 @@ package reddit
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"html"
 	"io/ioutil"
@@ -26,17 +25,42 @@ func DownloadFromReddit() error {
 
 	client := &http.Client{}
 	response, err := httpRequest(client, "GET", url)
-
 	if err != nil {
 		return err
 	}
-
 	defer response.Body.Close()
+
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return err
 	}
 
+	targetImgs := getImageUrls(body)
+	randIdx = util.GetRandomNum(len(targetImgs))
+	targetImg := targetImgs[randIdx]
+
+	resp, err := httpRequest(client, "GET", targetImg)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if _, err := util.FileTypeCheck(resp); err != nil {
+		return err
+	}
+
+	fileExt := util.ExtractFileExt(resp)
+	rawImg, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	filename := fmt.Sprintf("wallpaper.%v", fileExt)
+	return setwallpaper.SetWallpaper(filename, rawImg)
+
+}
+
+func getImageUrls(body []byte) []string {
 	var result map[string]interface{}
 	json.Unmarshal(body, &result)
 	children := result["data"].(map[string]interface{})["children"]
@@ -59,28 +83,7 @@ func DownloadFromReddit() error {
 		targetImgs = append(targetImgs, html.UnescapeString((imgUrl.(string))))
 	}
 
-	randIdx = util.GetRandomNum(len(targetImgs))
-	targetImg := targetImgs[randIdx]
-
-	resp, err := httpRequest(client, "GET", targetImg)
-	if err != nil {
-		return err
-	}
-
-	defer resp.Body.Close()
-	if !util.FileTypeCheck(resp) {
-		return errors.New("dowloaded file is not an image")
-	}
-
-	fileExt := util.ExtractFileExt(resp)
-	rawImg, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-
-	filename := fmt.Sprintf("wallpaper.%v", fileExt)
-	return setwallpaper.SetWallpaper(filename, rawImg)
-
+	return targetImgs
 }
 
 func httpRequest(client *http.Client, method, url string) (*http.Response, error) {
