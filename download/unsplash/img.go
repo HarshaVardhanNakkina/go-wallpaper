@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/url"
-	"regexp"
 
 	setwallpaper "github.com/HarshaVardhanNakkina/go-wallpaper/set_wallpaper"
 	"github.com/HarshaVardhanNakkina/go-wallpaper/util"
@@ -32,6 +31,9 @@ func DownloadFromUnsplash(resolution, tag string) error {
 		return err
 	}
 	defer resp.Body.Close()
+	if !util.FileTypeCheck(resp) {
+		return errors.New("dowloaded file is not an image")
+	}
 
 	reqUrl := resp.Request.URL
 	_, err = check404Error(reqUrl)
@@ -39,13 +41,7 @@ func DownloadFromUnsplash(resolution, tag string) error {
 		return err
 	}
 
-	fileExt := "jpeg"
-	contentType := resp.Header.Get("Content-Type")
-	imgExtRegex := regexp.MustCompile(`(?i)(jpeg|jpg|png)`)
-	imgExt := imgExtRegex.FindString(contentType)
-	if imgExt != "" {
-		fileExt = imgExt
-	}
+	fileExt := util.ExtractFileExt(resp)
 
 	rawImg, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -57,6 +53,7 @@ func DownloadFromUnsplash(resolution, tag string) error {
 
 }
 
+// TODO, change this function to return a bool, like FileTypeCheck
 func check404Error(reqUrl *url.URL) (*url.URL, error) {
 	if reqUrl.String() == imgNotFound {
 		return nil, errors.New("no image found with the given tag/resolution")
