@@ -17,6 +17,7 @@ It is built with Golang and inspired by [styli.sh](https://github.com/thevinter/
 - If you already have Golang installed, you can clone this repo and run the following commands
   - `go mod tidy` to install dependencies
   - `go install` to add the binary to your gopath
+  - make sure the `bin` directory of your gopath is in your `system path`
 - Or you can download the pre-built binaries from releases sections and add it to your path (or somewhere you can use it from terminal, cmd, powershell etc...)
 
 ## How to use
