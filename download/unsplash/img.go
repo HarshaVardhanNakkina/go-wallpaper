@@ -31,13 +31,13 @@ func DownloadFromUnsplash(resolution, tag string) error {
 		return err
 	}
 	defer resp.Body.Close()
-	if !util.FileTypeCheck(resp) {
-		return errors.New("dowloaded file is not an image")
+
+	if _, err := util.FileTypeCheck(resp); err != nil {
+		return err
 	}
 
 	reqUrl := resp.Request.URL
-	_, err = check404Error(reqUrl)
-	if err != nil {
+	if _, err = check404Error(reqUrl); err != nil {
 		return err
 	}
 
@@ -53,10 +53,9 @@ func DownloadFromUnsplash(resolution, tag string) error {
 
 }
 
-// TODO, change this function to return a bool, like FileTypeCheck
-func check404Error(reqUrl *url.URL) (*url.URL, error) {
+func check404Error(reqUrl *url.URL) (bool, error) {
 	if reqUrl.String() == imgNotFound {
-		return nil, errors.New("no image found with the given tag/resolution")
+		return false, errors.New("no image found with the given tag/resolution")
 	}
-	return reqUrl, nil
+	return true, nil
 }
