@@ -1,6 +1,7 @@
 package util
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"regexp"
@@ -30,8 +31,11 @@ func ExtractFileExt(resp *http.Response) string {
 	return fileExt
 }
 
-func FileTypeCheck(resp *http.Response) bool {
+func FileTypeCheck(resp *http.Response) (bool, error) {
 	contentType := resp.Header.Get("Content-Type")
 	contentTypeRegex := regexp.MustCompile(`(?i)(jpeg|jpg|png)`)
-	return contentTypeRegex.MatchString(contentType)
+	if contentTypeRegex.MatchString(contentType) {
+		return true, nil
+	}
+	return false, errors.New("downloaded file is not an image")
 }
