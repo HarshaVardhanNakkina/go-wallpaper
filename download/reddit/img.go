@@ -3,81 +3,98 @@ package reddit
 import (
 	"encoding/json"
 	"fmt"
+	"html"
 	"io/ioutil"
 	"net/http"
-	"path/filepath"
 
 	setwallpaper "github.com/HarshaVardhanNakkina/go-wallpaper/set_wallpaper"
 	util "github.com/HarshaVardhanNakkina/go-wallpaper/util"
 )
 
-type Result struct {
-	Data Children `json:"data"`
-}
-
-type Children struct {
-	ChildrenArr []ChildData `json:"children"`
-}
-
-type ChildData struct {
-	ChildObj ChildInfo `json:"data"`
-}
-
-type ChildInfo struct {
-	Title                 string `json:"title"`
-	SubredditNamePrefixed string `json:"subreddit_name_prefixed"`
-	Url                   string `json:"url"`
-}
-
 var redditUrl string = "https://www.reddit.com/r"
 var sort string = "new"
-var userAgent string = "win64:github.com/HarshaVardhanNakkina/go-wallpaper:/u/harsha602"
+var userAgent string = "/u/harsha602"
+
 var subreddits []string = []string{"EarthPorn", "wallpaper", "wallpapers", "multiwall"}
 
 func DownloadFromReddit() error {
-	fmt.Println("Downloading image from Reddit")
-	subreddit := util.GetRandomNum(len(subreddits))
-	url := fmt.Sprintf("%v/%v/%v/.json", redditUrl, subreddits[subreddit], sort)
+	randIdx := util.GetRandomNum(len(subreddits))
+	subreddit := subreddits[randIdx]
+	url := fmt.Sprintf("%v/%v/%v/.json", redditUrl, subreddit, sort)
+	fmt.Printf("Downloading image from /r/%v\n", subreddit)
+
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", url, nil)
+	response, err := httpRequest(client, "GET", url)
 	if err != nil {
 		return err
 	}
-
-	req.Header.Set("user-agent", userAgent)
-	response, err := client.Do(req)
-	if err != nil {
-		return err
-	}
-
 	defer response.Body.Close()
+
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return err
 	}
 
-	var data Result
-	json.Unmarshal(body, &data)
+	targetImgs := getImageUrls(body)
+	randIdx = util.GetRandomNum(len(targetImgs))
+	targetImg := targetImgs[randIdx]
 
-	images := data.Data.ChildrenArr
-	randInd := util.GetRandomNum(len(images))
-	pick := images[randInd]
-	imgUrl := pick.ChildObj.Url
-
-	resp, err := util.DownloadImg(imgUrl)
+	response, err = httpRequest(client, "GET", targetImg)
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer response.Body.Close()
 
-	fileExt := filepath.Ext(imgUrl)
+	if _, err := util.FileTypeCheck(response); err != nil {
+		return err
+	}
 
-	rawImg, err := ioutil.ReadAll(resp.Body)
+	fileExt := util.ExtractFileExt(response)
+	rawImg, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return err
 	}
 
-	filename := fmt.Sprintf("wallpaper%v", fileExt)
+	filename := fmt.Sprintf("wallpaper.%v", fileExt)
 	return setwallpaper.SetWallpaper(filename, rawImg)
+
+}
+
+func getImageUrls(body []byte) []string {
+	var result map[string]interface{}
+	json.Unmarshal(body, &result)
+	children := result["data"].(map[string]interface{})["children"]
+
+	var imgData []map[string]interface{}
+	for _, child := range children.([]interface{}) {
+		// type casting "data" is possible when assigning itself
+		data := child.(map[string]interface{})["data"]
+		if val, ok := data.(map[string]interface{})["post_hint"]; ok && val == "image" {
+			imgData = append(imgData, data.(map[string]interface{}))
+		}
+	}
+
+	targetImgs := []string{}
+	for _, img := range imgData {
+		previewImgs := img["preview"].(map[string]interface{})["images"]
+		firstImg := previewImgs.([]interface{})[0]
+		source := firstImg.(map[string]interface{})["source"]
+		imgUrl := source.(map[string]interface{})["url"]
+		targetImgs = append(targetImgs, html.UnescapeString((imgUrl.(string))))
+	}
+
+	return targetImgs
+}
+
+func httpRequest(client *http.Client, method, url string) (*http.Response, error) {
+
+	req, err := http.NewRequest(method, url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	// userAgent is global
+	req.Header.Set("user-agent", userAgent)
+	return client.Do(req)
 
 }
