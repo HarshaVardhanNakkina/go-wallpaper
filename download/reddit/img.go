@@ -39,18 +39,18 @@ func DownloadFromReddit() error {
 	randIdx = util.GetRandomNum(len(targetImgs))
 	targetImg := targetImgs[randIdx]
 
-	resp, err := httpRequest(client, "GET", targetImg)
+	response, err = httpRequest(client, "GET", targetImg)
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer response.Body.Close()
 
-	if _, err := util.FileTypeCheck(resp); err != nil {
+	if _, err := util.FileTypeCheck(response); err != nil {
 		return err
 	}
 
-	fileExt := util.ExtractFileExt(resp)
-	rawImg, err := ioutil.ReadAll(resp.Body)
+	fileExt := util.ExtractFileExt(response)
+	rawImg, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return err
 	}
