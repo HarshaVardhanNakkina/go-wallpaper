@@ -10,7 +10,7 @@ It is built with Golang and inspired by [styli.sh](https://github.com/thevinter/
 ## Features
 
 - It can set wallpapers from [Unsplash](https://unsplash.com), subreddits like `/r/wallpaper`, `/r/wallpapers`
-- `go-wallpaper.exe --help` for help
+- `go-wallpaper.exe help` for help
 
 ## How to install
 
