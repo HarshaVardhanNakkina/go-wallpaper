@@ -18,6 +18,7 @@ var redditCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(redditCmd)
-	// rootCmd.PersistentFlags().StringVarP(&Resolution, "resolution", "r", "", "Resolution of wallpaper (defaults to 1920x1080)")
+
+	// TODO: maybe convert these flags into sub-commands
 	redditCmd.Flags().StringVarP(&sort, "sort", "s", "new", `Choose from "new", "hot", and "top" sections`)
 }
