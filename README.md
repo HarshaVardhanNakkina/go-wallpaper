@@ -38,13 +38,17 @@ It is built with Golang and inspired by [styli.sh](https://github.com/thevinter/
 # set a random background from one of these subreddits "EarthPorn", "wallpaper", "wallpapers", "multiwall"
 # resolution, tag flags won't have any effect here
 > go-wallpaper.exe reddit
+
+# sort reddit wallpapers by new, hot, top with -s or --sort flag
+> go-wallpaper.exe reddit -s new
 ```
 
 ## Features to come
 
 - [x] Set wallpapers from subreddits like `r/wallpapers` etc...
 - [ ] Set wallpapers from NASA image library [NASA Images](https://images.nasa.gov/), [NASA API Docs](https://images.nasa.gov/docs/images.nasa.gov_api_docs.pdf)
-- [ ] Wallpapers from different sections of subreddit like `hot`, `new`, `top` etc...
+- [x] Wallpapers from different sections of subreddit like `hot`, `new`, `top` etc...
+- [ ] Sort subreddit wallpapers from the `top` section by `year`, `month`, `week` etc...
 - [ ] Flags for custom subreddit
 - [ ] Flags for selecting wallpapers from a specific unsplash collection
 - [ ] Flags for saving the wallpapers permanently with a different name
