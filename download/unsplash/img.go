@@ -12,18 +12,14 @@ import (
 
 var imgNotFound = "https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200"
 var unsplashUrl string = "https://source.unsplash.com"
-var defaultRes string = "1920x1080"
 
 func DownloadFromUnsplash(resolution, tag string) error {
 	fmt.Println("Downloading image from unsplash.com")
-	if resolution != "" {
-		defaultRes = resolution
-	}
 
 	if tag == "" {
-		unsplashUrl = fmt.Sprintf("%v/%v/", unsplashUrl, defaultRes)
+		unsplashUrl = fmt.Sprintf("%v/%v/", unsplashUrl, resolution)
 	} else {
-		unsplashUrl = fmt.Sprintf("%v/%v/?%v", unsplashUrl, defaultRes, tag)
+		unsplashUrl = fmt.Sprintf("%v/%v/?%v", unsplashUrl, resolution, tag)
 	}
 
 	resp, err := util.DownloadImg(unsplashUrl)

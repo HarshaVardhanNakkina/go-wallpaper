@@ -12,12 +12,11 @@ import (
 )
 
 var redditUrl string = "https://www.reddit.com/r"
-var sort string = "new"
 var userAgent string = "/u/harsha602"
 
 var subreddits []string = []string{"EarthPorn", "wallpaper", "wallpapers", "multiwall"}
 
-func DownloadFromReddit() error {
+func DownloadFromReddit(sort string) error {
 	randIdx := util.GetRandomNum(len(subreddits))
 	subreddit := subreddits[randIdx]
 	url := fmt.Sprintf("%v/%v/%v/.json", redditUrl, subreddit, sort)
