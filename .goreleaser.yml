@@ -7,19 +7,18 @@ before:
     # you may remove this if you don't need go generate
     - go generate ./...
 builds:
-  - main: ./cmd
-    id: 'root'
-    env:
+  - env:
       - CGO_ENABLED=0
     goos:
       - windows
 archives:
+  - id: go-wallpaper
+  - format: zip
+    files:
+      - none*
   - replacements:
       windows: Windows
       amd64: x86_64
-  - format_overrides:
-      - goos: windows
-        format: zip
 checksum:
   name_template: 'checksums.txt'
 snapshot:
