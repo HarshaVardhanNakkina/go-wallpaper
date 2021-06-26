@@ -7,14 +7,8 @@ before:
     # you may remove this if you don't need go generate
     - go generate ./...
 builds:
-  - main: ./cmd/root.go
+  - main: ./cmd
     id: 'root'
-    env:
-      - CGO_ENABLED=0
-    goos:
-      - windows
-  - main: ./cmd/reddit.go
-    id: 'reddit'
     env:
       - CGO_ENABLED=0
     goos:
