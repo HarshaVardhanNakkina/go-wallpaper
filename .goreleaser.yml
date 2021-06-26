@@ -8,6 +8,13 @@ before:
     - go generate ./...
 builds:
   - main: ./cmd/root.go
+    id: 'root'
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - windows
+  - main: ./cmd/reddit.go
+    id: 'reddit'
     env:
       - CGO_ENABLED=0
     goos:
