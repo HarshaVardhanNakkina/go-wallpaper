@@ -59,7 +59,7 @@ func init() {
 
 	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.go-wallpaper.yaml)")
 	rootCmd.Flags().StringVarP(&Resolution, "resolution", "r", "1920x1080", "Resolution of wallpaper")
-	rootCmd.Flags().StringVarP(&Tag, "tag", "t", "", "Tag(s)/Search Term(s) for wallpaper (comma seperated, no spaces between commas) (empty by default)")
+	rootCmd.Flags().StringVarP(&Tag, "tag", "t", "", "Tag(s)/Search Term(s) for wallpaper (comma separated, no spaces between commas) (empty by default)")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
