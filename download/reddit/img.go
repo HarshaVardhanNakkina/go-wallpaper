@@ -12,23 +12,23 @@ import (
 	"github.com/imroc/req"
 )
 
-// var redditUrl string = "https://www.reddit.com/r"
 var redditSearchUrl string = "https://reddit.com/search.json?q=subreddit:"
-
 var subreddits []string = []string{"EarthPorn", "wallpaper", "wallpapers", "multiwall"}
 
-func DownloadFromReddit(sort string) error {
+func DownloadFromReddit(sort, top string) error {
+	if sort == "" && top == "" {
+		return errors.New("invalid flag value provided")
+	}
 	randIdx := util.GetRandomNum(len(subreddits))
 	subreddit := subreddits[randIdx]
-	// url := fmt.Sprintf("%v/%v/%v/.json", redditUrl, subreddit, sort)
-	url := fmt.Sprintf("%v(%v)+self:no&sort=%v&limit=15&type=t3&restrict_sr=true", redditSearchUrl, subreddit, sort)
+	url := constructURL(subreddit, sort, top)
 	fmt.Printf("Downloading image from /r/%v\n", subreddit)
 
-	// client := &http.Client{
-	// 	Timeout: time.Second * 25,
-	// }
-	// response, err := httpRequest(client, "GET", url)
-	r, err := req.Get(url)
+	headers := req.Header{
+		"User-Agent": "go-wallpaper:v0.4.0:/u/harsha602",
+	}
+
+	r, err := req.Get(url, headers)
 	if err != nil {
 		return err
 	}
@@ -46,7 +46,6 @@ func DownloadFromReddit(sort string) error {
 	randIdx = util.GetRandomNum(len(targetImgs))
 	targetImg := targetImgs[randIdx]
 
-	// r, err = httpRequest(client, "GET", targetImg)
 	r, err = req.Get(targetImg)
 	if err != nil {
 		return err
@@ -75,7 +74,6 @@ func getImageUrls(body []byte) []string {
 
 	var imgData []map[string]interface{}
 	for _, child := range children.([]interface{}) {
-		// type casting "data" is possible when assigning itself
 		data := child.(map[string]interface{})["data"]
 		if val, ok := data.(map[string]interface{})["post_hint"]; ok && val == "image" {
 			imgData = append(imgData, data.(map[string]interface{}))
@@ -94,14 +92,17 @@ func getImageUrls(body []byte) []string {
 	return targetImgs
 }
 
-// func httpRequest(client *http.Client, method, url string) (*http.Response, error) {
-// 	req, err := http.NewRequest(method, url, nil)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+func constructURL(subreddit, sort, top string) string {
+	commonParams := "limit=20&type=t3&restrict_sr=true"
+	url := fmt.Sprintf("%v(%v)+self:no", redditSearchUrl, subreddit)
 
-// 	// userAgent is global
-// 	// req.Header.Set("User-Agent", userAgent)
-// 	return client.Do(req)
+	if top != "" {
+		return fmt.Sprintf("%v&t=%v&%v", url, top, commonParams)
+	}
 
-// }
+	if sort != "" {
+		return fmt.Sprintf("%v&sort=%v&%v", url, sort, commonParams)
+	}
+
+	return fmt.Sprintf("%v&%v", url, commonParams)
+}
