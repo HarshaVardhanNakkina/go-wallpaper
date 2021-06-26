@@ -35,9 +35,9 @@ var Tag string
 var rootCmd = &cobra.Command{
 	Use:   "go-wallpaper",
 	Short: "Set wallpaper from command line",
-	Long: `go-wallpaper is a cli tool for setting wallpapers from different sources, through command line
+	Long: `go-wallpaper is a cli tool for setting wallpapers from different sources through command line
 Inspired by https://github.com/thevinter/styli.sh
-Currently the image sources is/are Unsplash
+Currently the image sources is/are Unsplash, Reddit
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return unsplash.DownloadFromUnsplash(Resolution, Tag)
@@ -59,7 +59,7 @@ func init() {
 
 	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.go-wallpaper.yaml)")
 	rootCmd.Flags().StringVarP(&Resolution, "resolution", "r", "1920x1080", "Resolution of wallpaper")
-	rootCmd.Flags().StringVarP(&Tag, "tag", "t", "", "Tag(s)/Search Term(s) for wallpaper (comma separated, no spaces between commas) (empty by default)")
+	rootCmd.Flags().StringVarP(&Tag, "tag", "t", "", "Tag(s)/Search Term(s) comma separated, spaces between (empty by default)")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.

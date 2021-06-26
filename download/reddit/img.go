@@ -2,34 +2,42 @@ package reddit
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"html"
 	"io/ioutil"
-	"net/http"
 
 	setwallpaper "github.com/HarshaVardhanNakkina/go-wallpaper/set_wallpaper"
 	util "github.com/HarshaVardhanNakkina/go-wallpaper/util"
+	"github.com/imroc/req"
 )
 
-var redditUrl string = "https://www.reddit.com/r"
-var userAgent string = "/u/harsha602"
+// var redditUrl string = "https://www.reddit.com/r"
+var redditSearchUrl string = "https://reddit.com/search.json?q=subreddit:"
 
 var subreddits []string = []string{"EarthPorn", "wallpaper", "wallpapers", "multiwall"}
 
 func DownloadFromReddit(sort string) error {
 	randIdx := util.GetRandomNum(len(subreddits))
 	subreddit := subreddits[randIdx]
-	url := fmt.Sprintf("%v/%v/%v/.json", redditUrl, subreddit, sort)
+	// url := fmt.Sprintf("%v/%v/%v/.json", redditUrl, subreddit, sort)
+	url := fmt.Sprintf("%v(%v)+self:no&sort=%v&limit=15&type=t3&restrict_sr=true", redditSearchUrl, subreddit, sort)
 	fmt.Printf("Downloading image from /r/%v\n", subreddit)
 
-	client := &http.Client{}
-	response, err := httpRequest(client, "GET", url)
+	// client := &http.Client{
+	// 	Timeout: time.Second * 25,
+	// }
+	// response, err := httpRequest(client, "GET", url)
+	r, err := req.Get(url)
 	if err != nil {
 		return err
 	}
-	defer response.Body.Close()
+	defer r.Response().Body.Close()
+	if r.Response().StatusCode != 200 {
+		return errors.New(r.Response().Status)
+	}
 
-	body, err := ioutil.ReadAll(response.Body)
+	body, err := ioutil.ReadAll(r.Response().Body)
 	if err != nil {
 		return err
 	}
@@ -38,18 +46,19 @@ func DownloadFromReddit(sort string) error {
 	randIdx = util.GetRandomNum(len(targetImgs))
 	targetImg := targetImgs[randIdx]
 
-	response, err = httpRequest(client, "GET", targetImg)
+	// r, err = httpRequest(client, "GET", targetImg)
+	r, err = req.Get(targetImg)
 	if err != nil {
 		return err
 	}
-	defer response.Body.Close()
+	defer r.Response().Body.Close()
 
-	if _, err := util.FileTypeCheck(response); err != nil {
+	if _, err := util.FileTypeCheck(r.Response()); err != nil {
 		return err
 	}
 
-	fileExt := util.ExtractFileExt(response)
-	rawImg, err := ioutil.ReadAll(response.Body)
+	fileExt := util.ExtractFileExt(r.Response())
+	rawImg, err := ioutil.ReadAll(r.Response().Body)
 	if err != nil {
 		return err
 	}
@@ -85,15 +94,14 @@ func getImageUrls(body []byte) []string {
 	return targetImgs
 }
 
-func httpRequest(client *http.Client, method, url string) (*http.Response, error) {
+// func httpRequest(client *http.Client, method, url string) (*http.Response, error) {
+// 	req, err := http.NewRequest(method, url, nil)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	req, err := http.NewRequest(method, url, nil)
-	if err != nil {
-		return nil, err
-	}
+// 	// userAgent is global
+// 	// req.Header.Set("User-Agent", userAgent)
+// 	return client.Do(req)
 
-	// userAgent is global
-	req.Header.Set("user-agent", userAgent)
-	return client.Do(req)
-
-}
+// }
