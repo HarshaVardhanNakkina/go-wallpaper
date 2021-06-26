@@ -12,6 +12,7 @@ builds:
     goos:
       - windows
 archives:
+  - format: zip
   - replacements:
       windows: Windows
       386: i386
