@@ -15,12 +15,11 @@ archives:
   - format: zip
   - replacements:
       windows: Windows
-      386: i386
       amd64: x86_64
 checksum:
   name_template: 'checksums.txt'
 snapshot:
-  name_template: '{{ .Tag }}-next'
+  name_template: '{{ .Tag }}-next{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ end }}'
 changelog:
   sort: asc
   filters:
