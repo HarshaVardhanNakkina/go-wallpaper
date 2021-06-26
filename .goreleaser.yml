@@ -12,17 +12,23 @@ builds:
     goos:
       - windows
 archives:
-  - format: zip
   - replacements:
       windows: Windows
       amd64: x86_64
+  - format_overrides:
+      - goos: windows
+        format: zip
 checksum:
   name_template: 'checksums.txt'
 snapshot:
-  name_template: '{{ .Tag }}-next{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ end }}'
+  name_template: '{{ .Tag }}-next'
 changelog:
   sort: asc
   filters:
     exclude:
       - '^docs:'
       - '^test:'
+# .goreleaser.yml
+env_files:
+  # use only one or release will fail!
+  github_token: .\.env
