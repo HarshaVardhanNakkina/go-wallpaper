@@ -1,35 +1,57 @@
-# This is an example .goreleaser.yml file with some sane defaults.
-# Make sure to check the documentation at http://goreleaser.com
 before:
   hooks:
-    # You may remove this if you don't use go modules.
     - go mod tidy
-    # you may remove this if you don't need go generate
     - go generate ./...
 builds:
-  - env:
-      - CGO_ENABLED=0
+  - id: go-wallpaper
     goos:
       - windows
+    goarch:
+      - amd64
+    goarm:
+      - '6'
+    gomips:
+      - hardfloat
+    targets:
+      - windows_amd64
+    dir: .
+    main: .
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+        -X main.builtBy=goreleaser
+    binary: go-wallpaper
+    env:
+      - CGO_ENABLED=0
+    lang: go
+    gobinary: go
 archives:
-  - id: go-wallpaper
-  - format: zip
-    files:
-      - none*
-  - replacements:
-      windows: Windows
+  - id: default
+    builds:
+      - go-wallpaper
+    name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm
+      }}v{{ .Arm }}{{ end }}{{ if .Mips }}_{{ .Mips }}{{ end }}'
+    replacements:
       amd64: x86_64
+    format: zip
+    files:
+      - licence*
+      - LICENCE*
+      - license*
+      - LICENSE*
+      - readme*
+      - README*
+      - changelog*
+      - CHANGELOG*
+    allow_different_binary_count: false
 checksum:
   name_template: 'checksums.txt'
 snapshot:
-  name_template: '{{ .Tag }}-next'
+  name_template: '{{ .Tag }}'
 changelog:
   sort: asc
   filters:
     exclude:
       - '^docs:'
       - '^test:'
-# .goreleaser.yml
 env_files:
-  # use only one or release will fail!
   github_token: ./.env
