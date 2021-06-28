@@ -40,7 +40,16 @@ It is built with Golang and inspired by [styli.sh](https://github.com/thevinter/
 > go-wallpaper.exe reddit
 
 # sort reddit wallpapers by new, hot, top with -s or --sort flag
+# "top" option defaults to today's top use top flag instead for multiple options
 > go-wallpaper.exe reddit -s new
+
+# today - picks from today's top
+# week - picks from week's top
+# month - picks from month's top
+# year - picks from year's top
+# all - picks from alltime top
+# this takes priority over "sort" flag
+> go-wallpaper.exe reddit -t week
 ```
 
 ## Features to come
